@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(-145deg, #19c5Fe, #4553ff);
+      padding: 20px;
+    }
+
+    .box {
+      position: absolute;
+      width: 390px;
+      height: 240px;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 50px 100px -20px rgba(50, 50, 93, .25),
+        0 30px 60px -30px rgba(0, 0, 0, .3);
+      transform-origin: 0 0;
+      transition: transform 0.4s;
+    }
+
+    .box.next {
+      transform: translateX(120px) scaleX(calc(240 / 390)) scaleY(calc(180 / 240));
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function (event) {
+
+      const box = document.querySelector('.box');
+      setInterval(() => {
+        box.classList.toggle('next');
+      }, 2000);
+    })
+  </script>
+</head>
+
+<body>
+  <div class="box"></div>
+</body>
+
+</html>
