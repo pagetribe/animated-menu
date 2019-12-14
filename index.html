@@ -6,8 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600');
+
+    :root {
+      --padding: 16px 32px;
+      --products-width: 490px;
+      --products-height: 280px;
+      --developers-width: 390px;
+      --developers-height: 260px;
+      --company-width: 260px;
+      --company-height: 300px;
+    }
 
     * {
       box-sizing: border-box;
@@ -16,24 +27,75 @@
     body {
       min-height: 100vh;
       font-family: 'Open Sans', sans-serif;
-      background: linear-gradient(-145deg, #19c5Fe, #4553ff);
+      background: linear-gradient(-45deg, #19C5FE, #4553FF);
       padding: 20px;
     }
 
+
+    
+
     .box {
       position: absolute;
-      width: 390px;
-      height: 240px;
+      width: 490px;
+      height: 280px;
+      padding: 16px 32px;
       background: white;
       border-radius: 6px;
-      box-shadow: 0 50px 100px -20px rgba(50, 50, 93, .25),
+      box-shadow:
+        0 50px 100px -20px rgba(50, 50, 93, .25),
         0 30px 60px -30px rgba(0, 0, 0, .3);
       transform-origin: 0 0;
       transition: transform 0.4s;
     }
 
     .box.next {
-      transform: translateX(120px) scaleX(calc(240 / 390)) scaleY(calc(180 / 240));
+      transform: translateX(120px) scaleX(calc(240 / 490)) scaleY(calc(180 / 280));
+    }
+
+
+    /* The nav in the first dropdown with the larger icons. */
+
+    .navlist-primary li {
+      display: flex;
+      padding: 16px 0;
+    }
+
+    .circle {
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+
+    .payments .circle {
+      background: #87BBFD;
+    }
+
+    .billing .circle {
+      background: #74E3A2;
+    }
+
+    .connect .circle {
+      background: #68D4F8;
+    }
+
+    .navlist-primary-text {
+      flex: 1 1 auto;
+      margin-left: 24px;
+    }
+
+    .navlist-primary h3 {
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      line-height: 22px;
+      letter-spacing: 0.025em;
+      font-weight: 600;
+    }
+
+    .navlist-primary p {
+      font-size: 14px;
+      line-height: 22px;
+      color: #7b8ca3;
     }
   </style>
   <script>
@@ -48,7 +110,109 @@
 </head>
 
 <body>
-  <div class="box"></div>
+  <div class="popover">
+
+    <div class="content">
+
+      <!-- PRODUCTS POPOVER -->
+      <div class="section section-products active">
+        <ul class="navlist-primary">
+          <li class="navlist-primary-payments">
+            <div class="circle"></div>
+            <div class="navlist-primary-text">
+              <h3>Payments</h3>
+              <p>A complete payments platform engineered for growth</p>
+            </div>
+          </li>
+          <li class="navlist-primary-billing">
+            <div class="circle"></div>
+            <div class="navlist-primary-text">
+              <h3>Billing</h3>
+              <p>Build and scale your recurring business model.</p>
+            </div>
+          </li>
+          <li class="navlist-primary-connect">
+            <div class="circle"></div>
+            <div class="navlist-primary-text">
+              <h3>Connect</h3>
+              <p>Everything platforms need to get sellers paid.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- DEVELOPERS POPOVER -->
+      <div class="section section-developers active">
+        <ul class="navlist">
+          <li><i data-feather="info"></i>Documentation</li>
+        </ul>
+        <p class="subtle">Start integrating Stripe's products and tools.</p>
+        <div class="two-col">
+          <div>
+            <h4>Get started</h4>
+            <ul class="navlist-subtle">
+              <li>Elements</li>
+              <li>Checkout</li>
+              <li>Mobile apps</li>
+              <li>Libraries</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Popular topics</h4>
+            <ul class="navlist-subtle">
+              <li>Apple Pay</li>
+              <li>Testing</li>
+              <li>Launch checklist</li>
+              <li>Plug-ins</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPANY POPOVER -->
+      <div class="section section-company active">
+        <ul class="navlist">
+          <li><i data-feather="info"></i>About Stripe</li>
+          <li><i data-feather="users"></i>Customers</li>
+          <li><i data-feather="server"></i>Partner program</li>
+          <li><i data-feather="briefcase"></i>Jobs</li>
+          <li><i data-feather="image"></i>Environment</li>
+          <li><i data-feather="layout"></i>Newsroom</li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="background"></div>
+  </div>
+
+
+  <div class="box">
+    <div class="dropdown-content-1">
+      <ul class="navlist-primary">
+        <li class="payments">
+          <div class="circle"></div>
+          <div class="navlist-primary-text">
+            <h3>Payments</h3>
+            <p>A complete payments platform engineered for growth</p>
+          </div>
+        </li>
+        <li class="billing">
+          <div class="circle"></div>
+          <div class="navlist-primary-text">
+            <h3>Billing</h3>
+            <p>Build and scale your recurring business model.</p>
+          </div>
+        </li>
+        <li class="connect">
+          <div class="circle"></div>
+          <div class="navlist-primary-text">
+            <h3>Connect</h3>
+            <p>Everything platforms need to get sellers paid.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </body>
 
 </html>
