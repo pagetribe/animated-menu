@@ -200,15 +200,48 @@
     document.addEventListener('DOMContentLoaded', function (event) {
       // Init Feather icon set
       feather.replace();
-      const sections = document.querySelectorAll('.section');
-      let sectionCount = 0;
-      setInterval(()=> {
-        for(let section of sections) {
-          section.classList.remove('active')
-        }
-        sections[sectionCount % 3].classList.add('active')
-        sectionCount = (sectionCount % 3) + 1
-      }, 2000)
+      const sections = ['products', 'developers', 'company']
+      const sectionEls = document.querySelectorAll('.section')
+      const backgroundEl = document.querySelector('.background')
+      const contentEl = document.querySelector('.content')
+
+      let sectionCount = 0
+      const dimensions = {
+        products: { width: 490, height: 280, x: 0 },
+        developers: { width: 390, height: 266, x: 100 },
+        company: { width: 260, height: 296, x: 200 }
+      }
+      const originalWidth = dimensions.products.width
+      const originalHeight = dimensions.products.height
+
+      function showSection(section) {
+        sectionEls.forEach(el => el.classList.remove('active'))
+        document.querySelector(`.section-${section}`).classList.add('active')
+
+        //resize and position background
+        backgroundEl.style.transform = `
+          translateX(${dimensions[section].x}px)
+          scaleX(${dimensions[section].width / originalWidth})
+          scaleY(${dimensions[section].height / originalHeight})
+        `
+
+        //position content
+        contentEl.style.transform = `translateX(${dimensions[section].x}px)`
+
+      }
+      setInterval(() => {
+        showSection(sections[sectionCount % 3])
+        sectionCount++
+      }, 1500)
+
+
+      // setInterval(()=> {
+      //   for(let section of sections) {
+      //     section.classList.remove('active')
+      //   }
+      //   sections[sectionCount % 3].classList.add('active')
+      //   sectionCount = (sectionCount % 3) + 1
+      // }, 2000)
     })
   </script>
 </head>
