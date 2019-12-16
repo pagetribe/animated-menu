@@ -12,16 +12,18 @@
 
     :root {
       --padding: 16px 32px;
+      --transition-duration: 0.3s;
       --products-width: 490px;
       --products-height: 280px;
       --developers-width: 390px;
-      --developers-height: 260px;
+      --developers-height: 266px;
       --company-width: 260px;
-      --company-height: 300px;
+      --company-height: 296px;
     }
 
     * {
       box-sizing: border-box;
+      font-family: 'Open Sans', sans-serif;
     }
 
     body {
@@ -31,39 +33,104 @@
       padding: 20px;
     }
 
+    .header {
+      perspective: 2000px;
+    }
+
+    .nav {
+      display: flex;
+    }
+
+    .nav-link {
+      height: 50px;
+      padding: 0 25px;
+      line-height: 50px;
+      border: 0;
+      font-size: 16px;
+      color: white;
+      background: none;
+      font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+      transition: opacity 0.2s;
+    }
+
+    .nav-link:hover {
+      opacity: 0.5;
+    }
+
+
     .popover {
-      position: relative;
+      position: absolute;
+      left: 0;
+      right: 0;
+      opacity: 0;
+      transform-origin: center -20px;
+      transform: rotateX(-15deg);
+      transition:
+        transform var(--transition-duration),
+        opacity var(--transition-duration);
+      background: red;
+      display: inline-block;
+    }
+
+    .popover.open {
+      opacity: 1;
+      transform: rotateX(0);
+    }
+
+    .arrow {
+      position: absolute;
+      top: -6px;
+      left: 0;
+      width: 12px;
+      height: 12px;
+      margin-left: -6px;
+      background: white;
+      box-shadow: -3px -3px 5px rgba(80, 90, 120, 0.05);
+      border-radius: 4px 0 0 0;
+      transform: rotate(45deg);
+      transition:
+        transform var(--transition-duration),
+        opacity var(--transition-duration);
+      will-change: transform;
     }
 
     .background {
       position: absolute;
+      overflow: hidden;
       top: 0;
       left: 0;
       width: var(--products-width);
       height: var(--products-height);
-      padding: var(--dadding);
+      padding: var(--padding);
       background: white;
       border-radius: 6px;
       box-shadow:
         0 50px 100px -20px rgba(50, 50, 93, .25),
         0 30px 60px -30px rgba(0, 0, 0, .3);
       transform-origin: 0 0;
-      transition: transform 0.4s;
+      transition:
+        transform var(--transition-duration),
+        opacity var(--transition-duration);
     }
 
     .content {
       position: absolute;
+      overflow: hidden;
       z-index: 1;
       top: 0;
       left: 0;
       padding: var(--padding);
-      transition: transform 0.4s;
+      transition:
+        transform var(--transition-duration),
+        opacity var(--transition-duration);
     }
 
     .section {
       position: absolute;
       opacity: 0;
-      transition: opacity 0.6s;
+      transition: opacity 0.2s;
+      overflow: hidden;
     }
 
     .section.active {
@@ -201,10 +268,14 @@
     document.addEventListener('DOMContentLoaded', function (event) {
       // Init Feather icon set
       feather.replace();
+      const headerEl = document.querySelector('.header')
+      const navLinkEls = document.querySelectorAll('.nav-link')
+      const popoverEl = document.querySelector('.popover')
       const sections = ['products', 'developers', 'company']
       const sectionEls = document.querySelectorAll('.section')
       const backgroundEl = document.querySelector('.background')
       const contentEl = document.querySelector('.content')
+      const arrowEl = document.querySelector('.arrow')
 
       let sectionCount = 0
       const dimensions = {
@@ -212,28 +283,63 @@
         developers: { width: 390, height: 266, x: 100 },
         company: { width: 260, height: 296, x: 200 }
       }
-      const originalWidth = dimensions.products.width
-      const originalHeight = dimensions.products.height
+
+      const popoverLeft = popoverEl.getBoundingClientRect().x;
+
+      navLinkEls.forEach((navLink) => {
+        navLink.addEventListener('mouseenter', (event) => {
+          let targetPopover = event.target.getAttribute('data-nav')
+          showSection(targetPopover)
+        })
+        let section = navLink.getAttribute('data-nav')
+        let rect = navLink.getBoundingClientRect()
+        dimensions[section].arrowX = rect.left + (rect.width / 2) - popoverLeft
+      })
+
+      // Set initial arrow position
+      arrowEl.style.transform = `
+        translateX(${dimensions.products.arrowX}px)
+        rotate(45deg)
+      `
+
+
+      headerEl.addEventListener('mouseleave', () => {
+        hide()
+      })
 
       function showSection(section) {
+        popoverEl.classList.add('open')
         sectionEls.forEach(el => el.classList.remove('active'))
         document.querySelector(`.section-${section}`).classList.add('active')
+
+        // Position arrow
+        arrowEl.style.transform = `
+          translateX(${dimensions[section].arrowX}px)
+          rotate(45deg)
+        `
 
         //resize and position background
         backgroundEl.style.transform = `
           translateX(${dimensions[section].x}px)
-          scaleX(${dimensions[section].width / originalWidth})
-          scaleY(${dimensions[section].height / originalHeight})
+          scaleX(${dimensions[section].width / dimensions['products'].width})
+          scaleY(${dimensions[section].height / dimensions['products'].height})
         `
 
-        //position content
+        // Resize and position content
+        contentEl.style.width = dimensions[section].width + 'px'
+        contentEl.style.height = dimensions[section].height + 'px'
         contentEl.style.transform = `translateX(${dimensions[section].x}px)`
-
       }
-      setInterval(() => {
-        showSection(sections[sectionCount % 3])
-        sectionCount++
-      }, 1500)
+
+      function hide() {
+        popoverEl.classList.remove('open')
+      }
+
+
+      // setInterval(() => {
+      //   showSection(sections[sectionCount % 3])
+      //   sectionCount++
+      // }, 1500)
 
 
       // setInterval(()=> {
@@ -248,80 +354,90 @@
 </head>
 
 <body>
-  <div class="popover">
+  <header class="header">
+    <section>
+      <nav class="nav">
+        <button class="nav-link" data-nav="products">Products</button>
+        <button class="nav-link" data-nav="developers">Developers</button>
+        <button class="nav-link" data-nav="company">Company</button>
+        <nav>
+    </section>
+    <div class="popover">
 
-    <div class="content">
+      <div class="content">
 
-      <!-- PRODUCTS POPOVER -->
-      <div class="section section-products active">
-        <ul class="navlist-primary">
-          <li class="navlist-primary-payments">
-            <div class="circle"></div>
-            <div class="navlist-primary-text">
-              <h3>Payments</h3>
-              <p>A complete payments platform engineered for growth</p>
-            </div>
-          </li>
-          <li class="navlist-primary-billing">
-            <div class="circle"></div>
-            <div class="navlist-primary-text">
-              <h3>Billing</h3>
-              <p>Build and scale your recurring business model.</p>
-            </div>
-          </li>
-          <li class="navlist-primary-connect">
-            <div class="circle"></div>
-            <div class="navlist-primary-text">
-              <h3>Connect</h3>
-              <p>Everything platforms need to get sellers paid.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
+        <!-- PRODUCTS POPOVER -->
+        <div class="section section-products active">
+          <ul class="navlist-primary">
+            <li class="navlist-primary-payments">
+              <div class="circle"></div>
+              <div class="navlist-primary-text">
+                <h3>Payments</h3>
+                <p>A complete payments platform engineered for growth</p>
+              </div>
+            </li>
+            <li class="navlist-primary-billing">
+              <div class="circle"></div>
+              <div class="navlist-primary-text">
+                <h3>Billing</h3>
+                <p>Build and scale your recurring business model.</p>
+              </div>
+            </li>
+            <li class="navlist-primary-connect">
+              <div class="circle"></div>
+              <div class="navlist-primary-text">
+                <h3>Connect</h3>
+                <p>Everything platforms need to get sellers paid.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
 
-      <!-- DEVELOPERS POPOVER -->
-      <div class="section section-developers active">
-        <ul class="navlist">
-          <li><i data-feather="info"></i>Documentation</li>
-        </ul>
-        <p class="subtle">Start integrating Stripe's products and tools.</p>
-        <div class="two-col">
-          <div>
-            <h4>Get started</h4>
-            <ul class="navlist-subtle">
-              <li>Elements</li>
-              <li>Checkout</li>
-              <li>Mobile apps</li>
-              <li>Libraries</li>
-            </ul>
-          </div>
-          <div>
-            <h4>Popular topics</h4>
-            <ul class="navlist-subtle">
-              <li>Apple Pay</li>
-              <li>Testing</li>
-              <li>Launch checklist</li>
-              <li>Plug-ins</li>
-            </ul>
+        <!-- DEVELOPERS POPOVER -->
+        <div class="section section-developers active">
+          <ul class="navlist">
+            <li><i data-feather="info"></i>Documentation</li>
+          </ul>
+          <p class="subtle">Start integrating Stripe's products and tools.</p>
+          <div class="two-col">
+            <div>
+              <h4>Get started</h4>
+              <ul class="navlist-subtle">
+                <li>Elements</li>
+                <li>Checkout</li>
+                <li>Mobile apps</li>
+                <li>Libraries</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Popular topics</h4>
+              <ul class="navlist-subtle">
+                <li>Apple Pay</li>
+                <li>Testing</li>
+                <li>Launch checklist</li>
+                <li>Plug-ins</li>
+              </ul>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- COMPANY POPOVER -->
-      <div class="section section-company active">
-        <ul class="navlist">
-          <li><i data-feather="info"></i>About Stripe</li>
-          <li><i data-feather="users"></i>Customers</li>
-          <li><i data-feather="server"></i>Partner program</li>
-          <li><i data-feather="briefcase"></i>Jobs</li>
-          <li><i data-feather="image"></i>Environment</li>
-          <li><i data-feather="layout"></i>Newsroom</li>
-        </ul>
-      </div>
+        <!-- COMPANY POPOVER -->
+        <div class="section section-company active">
+          <ul class="navlist">
+            <li><i data-feather="info"></i>About Stripe</li>
+            <li><i data-feather="users"></i>Customers</li>
+            <li><i data-feather="server"></i>Partner program</li>
+            <li><i data-feather="briefcase"></i>Jobs</li>
+            <li><i data-feather="image"></i>Environment</li>
+            <li><i data-feather="layout"></i>Newsroom</li>
+          </ul>
+        </div>
 
+      </div>
+      <div class="background"></div>
+      <div class="arrow"></div>
     </div>
-    <div class="background"></div>
-  </div>
+  </header>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.16.0/feather.min.js"></script>
 </body>
 
